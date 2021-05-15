@@ -1,0 +1,31 @@
+.form{
+	margin:20px 0 20px 0;
+}
+#task input, textarea{
+	width:200px;
+}
+textarea{
+	width:202px !important;
+	height:200px !important;
+}
+.sorting{
+	color:blue;
+	cursor:pointer;
+}
+table{
+	border-collapse:collapse;
+	margin:10px 0 30px 0;
+}
+td{
+	padding:8px;
+}
+#logout{
+	position:absolute;
+	right:0;
+	top:0;
+	margin:0;
+}
+#add-task{
+	width:208px;
+	height:50px;
+}
