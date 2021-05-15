@@ -1,6 +1,5 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/core/models/URL.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/core/models/Settings.php";
 
 	class Template{
 		
