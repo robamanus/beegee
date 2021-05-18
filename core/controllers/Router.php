@@ -30,6 +30,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/Edit.
 				$request = $this->url->request;
 				$this->url->request = "admin";
 			}
+			$desc = "";
 			switch($this->url->request){
 				default:
 					if($this->url->CheckGuestAccess() == true){
@@ -42,7 +43,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/Edit.
 						else{
 							$this->Page404(); break;
 						}
-						$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $_SESSION['sorting'] . " LIMIT " . $start . ", " . $this->limit);
+						if(!isset($_SESSION['desc'])) { $_SESSION['desc'] = ""; }
+						$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $_SESSION['sorting'] . " " . $_SESSION['desc'] . " LIMIT " . $start . ", " . $this->limit);
 						$pagination = new Pagination($this->number_of_table_lines,$this->limit);
 						require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/GuestTable.php";
 						$rs = new ReadableStatus($this->data);
@@ -57,12 +59,14 @@ require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/Edit.
 					}
 				case false:
 				$this->path = "index";
-					$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $_SESSION['sorting'] . " LIMIT " . $start . ", " . $this->limit);
+					require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/models/Sorting.php";
+					if(!isset($_SESSION['sorting'])) { $_SESSION['sorting'] = "id"; }
+					if(!isset($_SESSION['desc'])) { $_SESSION['desc'] = ""; }
+					$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $_SESSION['sorting'] . " " . $_SESSION['desc'] . " LIMIT " . $start . ", " . $this->limit);
 					$pagination = new Pagination($this->number_of_table_lines,$this->limit);
 					$rs = new ReadableStatus($this->data);
 					$this->data = $rs->data;
 					require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/GuestTable.php";
-					
 					$gt = new GuestTable($this->data);
 					$this->data = $gt->table_data;
 					$template = new Template($this->path,$this->data,$pagination->pagination);
@@ -91,8 +95,18 @@ require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/Edit.
 					if(isset($_POST['sorting'])){
 						require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/models/Sorting.php";
 						$this->sortingby = new Sorting($_POST['sorting']);
+						if(!isset($_SESSION['sorting'])) { $_SESSION['sorting'] = "id"; }
+						if(!isset($_SESSION['desc'])) { $_SESSION['desc'] = ""; }
+						if($_SESSION['sorting'] == $this->sortingby->sorting){
+							switch($_SESSION['desc']){
+								case "": $_SESSION['desc'] = "DESC"; break;
+								case "DESC": $_SESSION['desc'] = ""; break;
+								default: $_SESSION['desc'] = ""; break;
+							}
+						}
 						$_SESSION['sorting'] = $this->sortingby->sorting;
-						$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $this->sortingby->sorting . " LIMIT " . $start . ", " . $this->limit);
+						
+						$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $this->sortingby->sorting . " " . $_SESSION['desc'] . " LIMIT " . $start . ", " . $this->limit);
 						$rs = new ReadableStatus($this->data);
 						$this->data = $rs->data;
 						require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/GuestTable.php";
@@ -129,14 +143,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/Edit.
 					}
 					break;
 				case 'confirm':
-					if(isset($_POST['input_data']) && (is_string($_POST['input_data'])==true) && isset($_POST['input_data']) && (is_string($_POST['v'])==true)){
+					if(isset($_POST['input_data']) && (is_string($_POST['input_data'])==true) && isset($_POST['input_data']) && (is_string($_POST['v'])==true) && (isset($_POST['i']))){
 						$_POST['input_data'] = htmlspecialchars($_POST['input_data'], ENT_QUOTES, 'utf-8');
 						$_POST['v'] = htmlspecialchars($_POST['v'], ENT_QUOTES, 'utf-8');
 						$_POST['str'] = htmlspecialchars($_POST['str'], ENT_QUOTES, 'utf-8');
+						$_POST['i'] = htmlspecialchars($_POST['i'], ENT_QUOTES, 'utf-8');
 						if(strpos($_POST['str'],"email") !== false) $column = 'email';
 						if(strpos($_POST['str'],"task") !== false) $column = 'task_text';
 						if(strpos($_POST['str'],"usr") !== false) $column = 'user_name';
-						if($db->UpdateData("UPDATE `tasks` SET `".$column."`='".$_POST['input_data']."', `status`=2 WHERE `".$column."`='".$_POST['v']."'") == true){
+						if($db->UpdateData("UPDATE `tasks` SET `".$column."`='".$_POST['input_data']."', `status`=2 WHERE `".$column."`='".$_POST['v']."' AND id=".$_POST['i'])){
 							echo "обновлено!";
 						}
 					}
@@ -153,7 +168,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/Edit.
 					}
 					require_once $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "core/views/AdminTable.php";
 					$pagination = new Pagination($this->number_of_table_lines,$this->limit);
-					$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $_SESSION['sorting'] . " LIMIT " . $start . ", " . $this->admin_strings_limit);
+					$this->data = $db->SelectByQueryString("SELECT * FROM `tasks` ORDER BY " . $_SESSION['sorting'] . " " . $_SESSION['desc'] . " LIMIT " . $start . ", " . $this->admin_strings_limit);
 					$rs = new ReadableStatus($this->data);
 					$this->data = $rs->data;
 					$at = new AdminTable($this->data);

@@ -39,12 +39,14 @@ $(document).ready(function() {
 	});
 	$(".sorting").click( function() {
 		var sorting = $(this).attr('id');
+		var d = $(this).attr('d');
 		$.ajax({
 			type: "POST",
 			url: "http://gikon.ru/sorting",
-			data: {sorting:sorting},
+			data: {sorting:sorting,d:d},
 			dataType: "html",
 			success: function(data){
+				var f = data;
 				$(".task_table").remove();
 				$("#title").after(data);
 			}
@@ -55,6 +57,7 @@ $(document).ready(function() {
 		if(id=="blocked") return;
 		var cl = $(this).attr('class');
 		var str = $(this).attr('str');
+		var i = $(this).attr('i');
 		var v = $(this).html();
 		$.ajax({
 			type: "POST",
@@ -71,7 +74,7 @@ $(document).ready(function() {
 					$.ajax({
 						type: "POST",
 						url: "http://gikon.ru/confirm",
-						data: {v:v,input_data:input_data,str:str},
+						data: {v:v,input_data:input_data,str:str,i:i},
 						dataType: "html",
 						success: function(data){
 							alert(data);

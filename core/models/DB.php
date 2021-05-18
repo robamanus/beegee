@@ -25,7 +25,7 @@
 		public function SelectByQueryString($string, $fetch_array = false){
 			$this->DBC();
 			$q = $this->db_connect->query($string);
-			if($q->num_rows != false) {
+			if(isset($q->num_rows)) {
 				switch($fetch_array){
 					case false: while($a = $q->fetch_assoc()) {
 									$values[] = $a;
@@ -39,6 +39,7 @@
 				
 				$this->MsqlClose();
 				if(isset($values)) { return $values; }
+				else return;
 			}
 			$this->MsqlClose();
 			return;
