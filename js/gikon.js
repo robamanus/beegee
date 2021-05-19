@@ -4,7 +4,7 @@ $(document).ready(function() {
 			if(($("input[name='usr']").val().length >= 3)&&($("input[name='usr']").val().length < 64)&&($("input[name='psw']").val().length >= 3)&&($("input[name='psw']").val().length < 64)){
 				$.ajax({
 					type: "POST",
-					url: "http://gikon.ru/login",
+					url: "login",
 					data: {usr:$("input[name='usr']").val(),psw:$("input[name='psw']").val()},
 					dataType: "html",
 					success: function(data){
@@ -28,7 +28,7 @@ $(document).ready(function() {
 		if(user==false || email==false || text==false) { alert("Заполните все поля формы!"); return; }
 		$.ajax({
 			type: "POST",
-			url: "http://gikon.ru/add-task",
+			url: "add-task",
 			data: {user:user,email:email,text:text},
 			dataType: "html",
 			success: function(data){
@@ -42,7 +42,7 @@ $(document).ready(function() {
 		var d = $(this).attr('d');
 		$.ajax({
 			type: "POST",
-			url: "http://gikon.ru/sorting",
+			url: "sorting",
 			data: {sorting:sorting,d:d},
 			dataType: "html",
 			success: function(data){
@@ -61,7 +61,7 @@ $(document).ready(function() {
 		var v = $(this).html();
 		$.ajax({
 			type: "POST",
-			url: "http://gikon.ru/edit",
+			url: "edit",
 			data: {cl:cl,v:v,str:str},
 			dataType: "html",
 			success: function(data){
@@ -73,7 +73,7 @@ $(document).ready(function() {
 				var input_data = $("input[str='"+str+"']").val();
 					$.ajax({
 						type: "POST",
-						url: "http://gikon.ru/confirm",
+						url: "confirm",
 						data: {v:v,input_data:input_data,str:str,i:i},
 						dataType: "html",
 						success: function(data){
@@ -91,7 +91,7 @@ $(document).ready(function() {
 	$("#logout").click( function() {
 		$.ajax({
 			type: "POST",
-			url: "http://gikon.ru/logout",
+			url: "logout",
 			dataType: "html",
 			success: function(data){
 				location.reload();
